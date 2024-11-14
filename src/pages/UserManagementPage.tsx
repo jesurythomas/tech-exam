@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useUserStore } from '@/stores/useUserStore'
-
+import { useNavigate } from "react-router-dom";
 import { AuthUser, useAuthStore } from '../stores/useAuthStore'
 import { toast } from "sonner"
 import { SignUpForm } from '@/components/auth/SignUpForm'
@@ -39,10 +39,15 @@ export function UserManagementPage() {
   const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false)
 
   const { getCurrentUser } = useAuthStore();
+  const navigate = useNavigate();
   
   useEffect(() => {
     getUsers()
     const user = getCurrentUser();
+    if (!user) {
+      navigate('/');
+      return;
+    }
     if (user) {
       setCurrentUser(user)
     }

@@ -2,17 +2,18 @@
 import { create } from 'zustand'
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://project-tech-ec925.as.r.appspot.com';
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 axios.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
         console.log('Token found:', token);
         console.log('Request headers:', config.headers);
     } else {
-        console.log('No token found in sessionStorage');
+        console.log('No token found in localStorage');
     }
     return config;
 }, (error) => {
@@ -57,12 +58,12 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
-    token: sessionStorage.getItem('token'),
-    isAuthenticated: !!sessionStorage.getItem('token'),
+    token: localStorage.getItem('token'),
+    isAuthenticated: !!localStorage.getItem('token'),
 
     checkAuth: async () => {
         try {
-            const token = sessionStorage.getItem('token');
+            const token = localStorage.getItem('token');
             if (!token) {
                 console.log('No token found during checkAuth');
                 set({ user: null, token: null, isAuthenticated: false });
@@ -75,14 +76,17 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ user: response.data.user, isAuthenticated: true });
         } catch (error) {
             console.error('Auth check failed:', error);
-            sessionStorage.removeItem('token');
+            localStorage.removeItem('token');
             set({ user: null, token: null, isAuthenticated: false });
         }
     },
 
     login: async (email: string, password: string) => {
         try {
+            console.log('Attempting login with base URL:', axios.defaults.baseURL);
             const response = await axios.post<{ user: AuthUser; token: string }>('/api/auth/login', { email, password });
+            console.log('Login response:', response);
+
             const { user, token } = response.data;
             const userToStore = {
                 ...user,
@@ -90,9 +94,14 @@ export const useAuthStore = create<AuthState>((set) => ({
                 lastName: user.lastName
             };
             set({ user, token, isAuthenticated: true });
-            sessionStorage.setItem('token', token);
-            sessionStorage.setItem('user', JSON.stringify(userToStore));
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(userToStore));
         } catch (error) {
+            console.error('Login error details:', {
+                baseURL: axios.defaults.baseURL,
+                error: error,
+                response: axios.isAxiosError(error) ? error.response : null
+            });
             const authError = new Error('Login failed') as AuthError;
             if (axios.isAxiosError(error)) {
                 authError.code = error.code;
@@ -147,13 +156,13 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     logout: () => {
         set({ user: null, token: null, isAuthenticated: false });
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
     },
 
     initializeAuth: async () => {
         try {
-            const token = sessionStorage.getItem('token');
+            const token = localStorage.getItem('token');
             if (!token) {
                 set({ user: null, token: null, isAuthenticated: false });
                 return;

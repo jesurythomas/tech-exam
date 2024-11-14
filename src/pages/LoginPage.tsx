@@ -1,11 +1,25 @@
 import { SignInForm } from '@/components/auth/SignInForm'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SignUpForm } from '@/components/auth/SignUpForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
-
+import { useAuthStore } from '../stores/useAuthStore'
+import { useNavigate } from "react-router-dom";
 export function LoginPage() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const navigate = useNavigate();
+  const { getCurrentUser } = useAuthStore();
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = getCurrentUser();
+      if (user) 
+        navigate('/contacts')
+      }
+    
+    fetchData();
+  }, [getCurrentUser, navigate])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
