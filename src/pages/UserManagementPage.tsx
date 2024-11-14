@@ -26,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useUserStore } from '@/stores/useUserStore'
-
 import { AuthUser, useAuthStore } from '../stores/useAuthStore'
 import { toast } from "sonner"
 import { SignUpForm } from '@/components/auth/SignUpForm'

@@ -1,17 +1,35 @@
 import { Link, useNavigate } from "react-router-dom";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, NavigationMenuContent, NavigationMenuTrigger, NavigationMenuLink } from "./ui/navigation-menu";
-import { useAuthStore } from "../stores/useAuthStore";
+import { AuthUser, useAuthStore } from "../stores/useAuthStore";
 import { useEffect, useState } from "react";
 import React from "react";
 
 function Navbar() {
   const { getCurrentUser, logout } = useAuthStore();
   const navigate = useNavigate();
-  const [user, setUser] = useState(getCurrentUser());
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    setUser(getCurrentUser());
-  }, [getCurrentUser]);
+    const initUser = async () => {
+      const currentUser = getCurrentUser();
+      setUser(currentUser);
+    };
+    
+    initUser();
+    
+    const interval = setInterval(() => {
+      const currentUser = getCurrentUser();
+      if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
+        setUser(currentUser);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Current user:', user);
+  }
 
   const isAdmin = user?.role === "admin" || user?.role === "super-admin";
 
@@ -20,6 +38,7 @@ function Navbar() {
     logout();
     navigate("/");
   };
+
 
   return (
     <nav className="bg-slate-800 p-4 shadow-md">

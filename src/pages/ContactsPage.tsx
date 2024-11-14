@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-
+import { useNavigate } from "react-router-dom";
 export function ContactsPage() {
   const { 
     contacts, 
@@ -45,18 +45,18 @@ export function ContactsPage() {
   const [contactToDelete, setContactToDelete] = useState<string | null>(null)
 
   const { getCurrentUser } = useAuthStore();
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchData = async () => {
-      await getContacts()
       const user = getCurrentUser();
-      if (user) {
-        setCurrentUser(user)
-      }
+    
+      setCurrentUser(user);
+      await getContacts();
     }
     
-    fetchData()
-  }, [getContacts, getCurrentUser])
+    fetchData();
+  }, [getContacts, getCurrentUser, navigate])
 
 
   const filteredContacts = contacts?.filter(contact => {
@@ -74,6 +74,8 @@ export function ContactsPage() {
   const handleDelete = async (id: string) => {
     setContactToDelete(id)
   }
+
+  console.log('from contacts', currentUser)
 
   const confirmDelete = async () => {
     if (!contactToDelete) return
