@@ -7,6 +7,7 @@ import { UserManagementPage } from './pages/UserManagementPage';
 import { LoginPage } from './pages/LoginPage';
 import { useAuthStore } from './stores/useAuthStore';
 import { Toaster } from 'sonner';
+import ResetPasswordPage from './pages/ResetPasswordForm';
 
 // Add new protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -44,6 +45,7 @@ function App() {
               <UserManagementPage />
             </ProtectedRoute>
           } />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

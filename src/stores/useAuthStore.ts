@@ -47,8 +47,8 @@ interface AuthState {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
     signup: (data: SignUpData) => Promise<{ message: string }>;
-    forgotPassword: (email: string) => Promise<void>;
-    resetPassword: (token: string, newPassword: string) => Promise<void>;
+    forgotPassword: (email: string) => Promise<string>;
+    resetPassword: (token: string, newPassword: string) => Promise<string>;
     logout: () => void;
     checkAuth: () => Promise<void>;
     initializeAuth: () => Promise<void>;
@@ -120,7 +120,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     forgotPassword: async (email: string) => {
         try {
-            await axios.post('/api/auth/forgot-password', { email });
+            const response = await axios.post('/api/auth/forgot-password', { email });
+            return response.data.message;
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new Error(error.response?.data?.message || 'Password reset request failed');
@@ -131,10 +132,14 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     resetPassword: async (token: string, newPassword: string) => {
         try {
-            await axios.post('/api/auth/reset-password', { token, newPassword });
+            const response = await axios.post('/api/auth/reset-password', {
+                token,
+                newPassword
+            });
+            return response.data.message;
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                throw new Error(error.response?.data?.message || 'Password reset failed');
+                throw new Error(error.response?.data?.error || 'Password reset failed');
             }
             throw new Error('Password reset failed');
         }
