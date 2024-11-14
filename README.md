@@ -1,3 +1,18 @@
+# Project Tech
+
+Live demo: [https://project-tech-ec925.web.app/](https://project-tech-ec925.web.app/)
+
+## Project Stack
+- Frontend: React + TypeScript + Vite
+- Database: MongoDB
+- Storage: Firebase Storage
+- Deployment: Firebase Hosting
+
+## Development Credentials
+Super Admin access:
+- Email: super-admin@gmail.com
+- Password: Testing1234!
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
