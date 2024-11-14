@@ -46,7 +46,7 @@ export function SignUpForm({ onSuccess, hideCard = false }: SignUpFormProps) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data?.message || 'Failed to sign up')
       } else {
-        toast.error('An unexpected error occurred')
+        toast.error('An unexpected error occurred ')
       }
     }
   }
